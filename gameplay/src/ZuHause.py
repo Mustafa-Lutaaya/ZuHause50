@@ -1,4 +1,4 @@
-from tkinter import *
+from tkinter import * #The tkinter library we imported from the start enables Graphical User Interface creation
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import csv #We import the csv module to read and write csv files
@@ -28,7 +28,11 @@ class GameInterface:
         self.window.geometry("600x600") #Set the Window's Geometry
         self.window.resizable(0,0) #I Disabled its resizing
         self.mode = "light" #Default color mode has been set to light
+        self.level = 1 # We set the deafult level to 1
+        self.target_word = None # We set the target word to guess to None
+        self.player_name = None # We also set the player name  to None
 
+        
         #Added a Label Widget within the class and packed it into the window
         self.label = Label(self.window, text="Wilkommen Zu Hause", font=("Times New Roman", 20))
         self.label.pack(pady=30)
@@ -40,29 +44,38 @@ class GameInterface:
         #Added a Color Mode Button assigned to the color_mode function to switch between colors
         self.change_color_mode_button = Button(self.window, text="Color Mode", command=self.color_mode)
         self.change_color_mode_button.place(relx=1, rely=0, anchor=NE) #Postion the Button in the right top corner
-    
-     # A function to switch between light and dark mode.
+
+        #Added a label to display the current level
+        self.level_label = Label(self.window, text="Level: 1", font=("Times New Romsn", 16))
+        self.level_label.pack(pady=10)
+        self.level_label.pack_forget() #We first hide it until after the profile check
+
+     
+     #A function to switch between light and dark mode.
     def color_mode(self):
-         if self.mode == "light":
-              self.window.configure(bg="#17202a")
-              self.mode = "dark" #Change mode
-              self.label.config(bg="#17202a", fg="white") #We change the lable text to white
+         if self.mode == "light": #If current mode is light
+              self.window.configure(bg="#17202a") #We change te background color  and set the mode to dark
+              self.mode = "dark"
+              self.label.config(bg="#17202a", fg="white") #We change the lable text too to white
+              self.level_label.config(bg="#17202a", fg="white") #We change level label colors too
          else:
-              self.window.configure(bg="#d7bde2")
-              self.mode = "light" #Update the mode
+              self.window.configure(bg="#d7bde2") #If current mode is dark, we change the ackground color and set the mode to light
+              self.mode = "light"
               self.label.config(bg="#d7bde2", fg="black") #We Change label text to black
+              self.level_label.config(bg="#d7bde2", fg="black")# We change level label colors as well
 
+    #A function to ask for the player's name throug prompting
     def ask_name_window(self):
-        self.enter_name_button.pack_forget() #This will hude the enter name button once clicked
+        self.enter_name_button.pack_forget() #We first hide the enter name button once clicked
 
-        #Created a child window
+        #Then Create a child window to ask for the name, by setting its size and title plus position
         self.name_prompt = Toplevel(self.window)
         self.name_prompt.geometry("400x150")
         self.name_prompt.title("Enter Your Name")
         
-         #We Set the default background color for the child window according to whats happening on the current mode
+        # Color_Mode Configurations For The Window 
         if self.mode == "light":
-             self.name_prompt.configure(bg ="#d7bde2")  
+             self.name_prompt.configure(bg="#d7bde2")
         else:
              self.name_prompt.configure(bg="#17202a")
 
@@ -70,38 +83,64 @@ class GameInterface:
         self.name_label=Label(self.name_prompt, text="What's your Name? / Wie heissen Sie?", font=('arial', 15, "bold"))
         self.name_label.pack(pady=10)
 
-        # Color_Mode Configurations For The Label 
+        #Added text color for the label according to the mode:
         if self.mode == "light":
-             self.name_label.configure(bg="#d7bde2", fg="black")
+             self.name_label.config(bg="#d7bde2", fg="black") #If light mode, text will be black
         else:
-             self.name_label.configure(bg="#17202a", fg="white")
+             self.name_label.config(bg="#17202a", fg="white") #If dark mode, text will be wite
 
         #Added an entry wdget for the user to type their name
         self.name_entry = Entry(self.name_prompt, font=('arial', 18, "bold"))
         self.name_entry.pack(pady=10)
 
+        # Added text color for the widget depending on the mode
+        if self.mode == "light":
+             self.name_entry.config(fg="black") #If light mode , text will be black
+        else:
+             self.name_entry.config(fg="black") #If dark mode, text will be white
+
         #Added a submit button with a function to handle the name input
         self.submit_button = Button(self.name_prompt, text="Submit", command=self.submit_name)
         self.submit_button.pack(pady=10)
-     
+
+        #Added text color for the button too depending on the mode
+        if self.mode == "light":
+             self.submit_button.config(fg="black")
+        else:
+             self.submit_button.config(fg="black")
+
+    #This Function will handle the name submissions
     def submit_name(self):
             player_name = self.name_entry.get() #Enabled Name Capture for Name entered in the Entry Widget
-            if player_name:
+            if player_name: #If the player enters a namw
                 existing_player = collection.find_one({"name": player_name}) #We check first if the player already exists in the databse
 
-                if existing_player:
+                if existing_player: #If it does exist
+                     self.player_name = player_name #Store the player name
+                     self.level = existing_player.get("level", 1) #We get the level from the player
                      self.label.config(text=f"Welcome back, {player_name}!") #If they exist, we display a welcome back message  
-                     #Creates both a continue and new game button
+                    
+                    # Then make the level visible
+                     self.level_label.pack()
+                     self.level_label.config(text=f"Level: {self.level}")
+
+                     #Display both a continue and new game button
                      self.continue_button = Button(self.window, text="Continue Game", command=self.continue_game)
                      self.continue_button.pack(pady=10)
                      self.newgame_button = Button(self.window, text="New Game", command=self.new_game)
                      self.newgame_button.pack(pady=10)
 
-                else:
-                    player_data = {"name": player_name, "score":0, "guessed_words": []} #If player doesn't exist, we create a new profile and save it to MongoDB
+                else: #if its a new name
+                    self.player_name = player_name #We set the player name
+                    player_data = {"name": player_name, "score":0, "guessed_words": [], "level": 1} #We create a new profile and save it to MongoDB
                     collection.insert_one(player_data) #Insert the new Player Profile into the collection
                     self.label.config(text=f"Good To Have You Here, {player_name}!")
                     
+                    #We show the level
+                    self.level_label.pack()
+                    self.level_label.config(text=f"Level: {self.level}")
+
+                    #We then create &  display a button to start a new game
                     self.newgame_button = Button(self.window, text="New Game", command=self.new_game) #Then Creates a New Game Button
                     self.newgame_button.pack(pady=10)
 
@@ -109,18 +148,23 @@ class GameInterface:
 
             else:
                  print("No name entered.") #This enables us to handle empty inputs
-        
+    
+     #A Function to start a new game
     def new_game(self):
-         #We hide both newgame and continue buttons
+         #We hide both newgame & continue buttons
          self.newgame_button.pack_forget() 
          self.continue_button.pack_forget()
      
          #Configure the light modes & display new statement
          if self.mode=="light":
-              self.label.config(text=f"Guess a word........", bg="#d7bde2")
+              self.label.config(text=f"Guess a word........")
          else:
-              self.label.config(text=f"Guess a word........", bg="17202a")
-    
+              self.label.config(text=f"Guess a word........")
+
+         self.level_message() #Display the level label
+         self.select_word() #Start Playing by selecting a word
+
+    #Function to conitnue a current game
     def continue_game(self):
          #We hide both newgame and continue buttons
          self.newgame_button.pack_forget()
@@ -128,13 +172,63 @@ class GameInterface:
 
          #Configure the light modes & display new statement
          if self.mode=="light":
-              self.label.config(text=f"Let's Guess More Words.........", bg="#d7bde2")
+              self.label.config(text=f"Let's Guess More Words.........")
          else:
-              return self.label.config(text=f"Let's Guess More Words.........", bg="#d7bde2")
-        
+              self.label.config(text=f"Let's Guess More Words.........")
+         self.level_message() #Display the level we are continuing from
+         self.select_word() #Start Playing
 
-root = Tk() #Created The Main Window
- 
+    #Function to update the level display based on the current level 
+    def level_message(self): 
+         self.level_label.config(text=f"Level: {self.level}") #This will display what level we are on in the window
+
+    #FUnction to select a word randomly from the CSV files based on the player and their current level       
+    def select_word(self):
+         # During word selection, we use the stored players name to see the words that have and have not been played
+         player = collection.find_one({"name":self.player_name})
+
+         guessed_words = player.get("guessed_words", []) #Retrieve the list of guseesd words
+         file_name = None
+
+          #Selection of words from different levels based on which CSV we are using
+         if self.level == 1:
+          file_name = "a1words.csv"
+         elif self.level ==2:
+              file_name = "alverbs.csv"
+         else:
+              self.label.config(text="Game Over!, Thanks for playin!") #Display the game over
+              return #To stop it from guessing anymore since there are no more levels
+
+         #The Logic here is to be able to move on to the next level, when words in one level / csv file have all been played
+         with open(file_name, mode="r") as csvfile:
+          reader = list(csv.reader(csvfile)) #We read the CSV file nto a list of rows
+          available_words = [row for row in reader if row[0] not in guessed_words] #This filters out the guessed words
+
+          if available_words:
+               selected_row = choice(available_words) # We randomly select a word
+               self.target_word = selected_row[0] #Then set the word to be guessed
+          else:
+               self.level += 1 #If all words in the CSV are selected, we move to the next one
+               self.select_word() #We then keep playing in the next level as well
+
+    #Function to handle what happens after a player has guessed correct or wrong
+    def handle_guess(self, guessed_word):
+         #While still in the player's profile
+         player = collection.find_one({"name": self.player_name})
+
+         if player and guessed_word.lower() == self.target_word.lower():
+              #If the word is guessed correctly, we add it to the specific players profile word's played databse
+              collection.update_one(
+                   {"name": self.player_name},
+                   {"$push": {"guessed_words": self.target_word}}
+              )
+              #Then display a message to the player
+              self.label.config(text=f"Correct! The Word was: {self.target_word}")
+              self.new_game() #Play a new word
+         else:
+              self.label.config(text="Incorrect! Try again.") #We display an incorrect message
+
+# We make the main Tkinter window
+root = Tk() 
 app = GameInterface(root) #Created an instance of the Interface class
-
-root.mainloop() #Initiated the Tkinter main loop 
+root.mainloop() #Initiated the Tkinter main loop, where we display the window and handle user Interactions
