@@ -21,8 +21,10 @@ except Exception as e:
 db = client["ZuHause"] #Database Access
 collection = db["PlayersProfiles"] #Access a Collection in the Databse
 
+Max_Wrong_Guesses = 17 #Here we set the maximum number of wrong guesses before the game ends
+
 class GameInterface:
-    def __init__(self,window):
+    def __init__(self,window,wrong_guesses=0):
         self.window = window
         self.window.title("Zu Hause") #Set The Window's Title
         self.window.geometry("600x600") #Set the Window's Geometry
@@ -31,8 +33,10 @@ class GameInterface:
         self.level = 1 # We set the deafult level to 1
         self.target_word = None # We set the target word to guess to None
         self.player_name = None # We also set the player name  to None
+        self.correct_guesses = [] # We Create a list to store correct guesses 
+        self.wrong_guesses = wrong_guesses #Here we count the incorrect guesses
+        self.window.bind("<KeyPress>", self.handle_guess) #Here we bond the key press to the handle guess function
 
-        
         #Added a Label Widget within the class and packed it into the window
         self.label = Label(self.window, text="Wilkommen Zu Hause", font=("Times New Roman", 20))
         self.label.pack(pady=30)
@@ -46,10 +50,17 @@ class GameInterface:
         self.change_color_mode_button.place(relx=1, rely=0, anchor=NE) #Postion the Button in the right top corner
 
         #Added a label to display the current level
-        self.level_label = Label(self.window, text="Level: 1", font=("Times New Romsn", 16))
+        self.level_label = Label(self.window, text="Level: 1", font=("Times New Roman", 16))
         self.level_label.pack(pady=10)
         self.level_label.pack_forget() #We first hide it until after the profile check
 
+        #Added a Label to display the guessed word
+        self.guessed_word_label = Label(self.window, text="", font=("Arial", 18))
+        self.guessed_word_label.pack(pady=10)
+
+        #Added a label to display the house drwawing and its initially set to nothing
+        self.house_label = Label(self.window, text="", font=("Courier",14), justify=CENTER, bg="grey")
+        self.house_label.place(relx=0.5, rely=0.5, anchor=CENTER)
      
      #A function to switch between light and dark mode.
     def color_mode(self):
@@ -63,6 +74,181 @@ class GameInterface:
               self.mode = "light"
               self.label.config(bg="#d7bde2", fg="black") #We Change label text to black
               self.level_label.config(bg="#d7bde2", fg="black")# We change level label colors as well
+     
+    #Here we define a function to draw a house based on wrong guesses
+    def draw_house(self, wrong_guesses):
+        house = [
+        r'''
+        __________
+        ''',
+        r'''
+        __________
+       /          \
+      /            \   
+        ''',
+        r'''
+        ____________
+       /            \
+      /______________\
+        ''',
+        r'''
+        ____________
+       /            \
+      /______________\
+       |            |
+       |            |
+        ''',
+        r'''
+        ____________
+       /            \
+      /______________\
+       |            |
+       |            |
+       |            |
+       |            |
+        ''',
+        r'''
+        ____________
+       /            \
+      /______________\
+       |            |
+       |            |
+       |            |
+       |            |
+       |____    ____|
+        ''',
+        r'''
+        ____________
+       /            \
+      /______________\
+       |            |
+       |            |
+       |            |
+       |            |
+       |____|  |____|
+        ''',
+        r'''
+        ____________
+       /            \
+      /______________\
+       |            |
+       |            |
+       |            |
+       |     __     |
+       |____|__|____|
+        ''',
+        r'''
+        ____________
+       /            \
+      /______________\
+       |            |
+       |            |
+       |           _|
+       |     __     |
+       |____|__|____|
+        ''',
+        r'''
+        ____________
+       /            \
+      /______________\
+       |            |
+       |            |
+       |          |_|
+       |     __     |
+       |____|__|____|
+        ''',
+        r'''
+        ____________
+       /            \
+      /______________\
+       |            |
+       |           _|
+       |          |_|
+       |     __     |
+       |____|__|____|
+        ''',
+        r'''
+        ____________
+       /            \
+      /______________\
+       |            |
+       |           _|
+       |_         |_|
+       |     __     |
+       |____|__|____|
+        ''',
+        r'''
+        ____________
+       /            \
+      /______________\
+       |            |
+       |           _|
+       |_|        |_|
+       |     __     |
+       |____|__|____|
+        ''',
+        r'''
+        ____________
+       /            \
+      /______________\
+       |            |
+       |_          _|
+       |_|        |_|
+       |     __     |
+       |____|__|____|
+        ''',
+        r'''
+        ____________
+       /            \
+      /___ZU_________\
+       |            |
+       |_          _|
+       |_|        |_|
+       |     __     |
+       |____|__|____|
+        ''',
+        r'''
+        ____________
+       /            \
+      /___ZU__HA_____\
+       |            |
+       |_          _|
+       |_|        |_|
+       |     __     |
+       |____|__|____|
+        ''',
+        r'''
+        ____________
+       /            \
+      /___ZU__HAUS___\
+       |            |
+       |_          _|
+       |_|        |_|
+       |     __     |
+       |____|__|____|
+        ''',
+        r'''
+        ____________
+       /            \
+      /___ZU__HAUSE__\
+       |            |
+       |_          _|
+       |_|        |_|
+       |     __     |
+       |____|__|____|
+        ''',
+        r'''
+        ____________
+       /            \
+      /___ZU__HAUSE._\
+       |            |
+       |_          _|
+       |_|        |_|
+       |     __     |
+       |____|__|____|
+        ''',
+    ]   #We then go ahead and update the house based on the number of wrong guesses
+        self.house_label.config(text=house[min(wrong_guesses, len(house) -1)])
 
     #A function to ask for the player's name throug prompting
     def ask_name_window(self):
@@ -124,11 +310,9 @@ class GameInterface:
                      self.level_label.pack()
                      self.level_label.config(text=f"Level: {self.level}")
 
-                     #Display both a continue and new game button
-                     self.continue_button = Button(self.window, text="Continue Game", command=self.continue_game)
-                     self.continue_button.pack(pady=10)
-                     self.newgame_button = Button(self.window, text="New Game", command=self.new_game)
-                     self.newgame_button.pack(pady=10)
+                     #Display both a play game button
+                     self.playgame_button = Button(self.window, text="Play Game", command=self.play_game)
+                     self.playgame_button.pack(pady=10)
 
                 else: #if its a new name
                     self.player_name = player_name #We set the player name
@@ -141,8 +325,8 @@ class GameInterface:
                     self.level_label.config(text=f"Level: {self.level}")
 
                     #We then create &  display a button to start a new game
-                    self.newgame_button = Button(self.window, text="New Game", command=self.new_game) #Then Creates a New Game Button
-                    self.newgame_button.pack(pady=10)
+                    self.playgame_button = Button(self.window, text="Play Game", command=self.play_game) #Then Creates a New Game Button
+                    self.playgame_button.pack(pady=10)
 
                 self.name_prompt.destroy() #Enable closure of the propmt window
 
@@ -150,43 +334,34 @@ class GameInterface:
                  print("No name entered.") #This enables us to handle empty inputs
     
      #A Function to start a new game
-    def new_game(self):
-         #We hide both newgame & continue buttons
-         self.newgame_button.pack_forget() 
-         self.continue_button.pack_forget()
+    def play_game(self):
+         #We hide both playgame & continue buttons
+         self.playgame_button.pack_forget() 
      
          #Configure the light modes & display new statement
          if self.mode=="light":
               self.label.config(text=f"Guess a word........")
          else:
               self.label.config(text=f"Guess a word........")
-
-         self.level_message() #Display the level label
+         self.correct_guesses = []
+         self.wrong_guesses = 0
          self.select_word() #Start Playing by selecting a word
-
-    #Function to conitnue a current game
-    def continue_game(self):
-         #We hide both newgame and continue buttons
-         self.newgame_button.pack_forget()
-         self.continue_button.pack_forget()
-
-         #Configure the light modes & display new statement
-         if self.mode=="light":
-              self.label.config(text=f"Let's Guess More Words.........")
-         else:
-              self.label.config(text=f"Let's Guess More Words.........")
-         self.level_message() #Display the level we are continuing from
-         self.select_word() #Start Playing
+         self.guessed_word_label.config(text=self.construct_guessed_word()) #We Update the guessed word label with underscores for unguessed letters
 
     #Function to update the level display based on the current level 
     def level_message(self): 
          self.level_label.config(text=f"Level: {self.level}") #This will display what level we are on in the window
 
+    def game_over(self,message):
+         self.label.config(text=message)
+         self.house_label.config(text="") #We clear the ouse drawing
+         self.playgame_button = Button(self.window, text="Play On", command=self.play_game)
+         self.playgame_button.pack(pady=10)
+              
     #FUnction to select a word randomly from the CSV files based on the player and their current level       
     def select_word(self):
          # During word selection, we use the stored players name to see the words that have and have not been played
          player = collection.find_one({"name":self.player_name})
-
          guessed_words = player.get("guessed_words", []) #Retrieve the list of guseesd words
          file_name = None
 
@@ -211,22 +386,47 @@ class GameInterface:
                self.level += 1 #If all words in the CSV are selected, we move to the next one
                self.select_word() #We then keep playing in the next level as well
 
-    #Function to handle what happens after a player has guessed correct or wrong
-    def handle_guess(self, guessed_word):
-         #While still in the player's profile
-         player = collection.find_one({"name": self.player_name})
+    #Function to construct the guessed word it as well diplays underscores for unguessed letters
+    def construct_guessed_word(self):
+         guessed_word = ""
+         for letter in self.target_word:
+              if letter in self.correct_guesses:
+                   guessed_word += f"{letter}" 
+              else:
+                   guessed_word += " _ "
+         return guessed_word
 
-         if player and guessed_word.lower() == self.target_word.lower():
-              #If the word is guessed correctly, we add it to the specific players profile word's played databse
-              collection.update_one(
-                   {"name": self.player_name},
-                   {"$push": {"guessed_words": self.target_word}}
-              )
+    #Function to handle the letter guess from the player
+    def handle_guess(self, event):
+         guessed_letter = event.char.lower()
+
+         if guessed_letter.isalpha() and len(guessed_letter) == 1: #We check if player has input a single letter
+              if guessed_letter in self.target_word:
+                   if guessed_letter not in self.correct_guesses:
+                        self.correct_guesses.append(guessed_letter)
+                        self.label.config(text=f"Good Guess")
+              else:
+                   self.wrong_guesses += 1 #We increase the number of wrong guesses
+                   self.draw_house(self.wrong_guesses) #And call function to build part of the house
+                   self.label.config(text=f"Wrong Guess")
+                   
+              self.guessed_word_label.config(text=self.construct_guessed_word())
+         
+         #If all letter;s have been guessed, then we update the database with the word then move on to the next word
+              if self.construct_guessed_word().replace(" _ ","") == self.target_word:
+                   collection.update_one(
+                        {"name": self.player_name},
+                        {"$push": {"guessed_words": self.target_word}}
+                    )
               #Then display a message to the player
-              self.label.config(text=f"Correct! The Word was: {self.target_word}")
-              self.new_game() #Play a new word
+                   self.label.config(text=f"Correct! The Word was: {self.target_word}")
+                   self.play_game() #Play a new word
+              else:
+                   if self.wrong_guesses >= Max_Wrong_Guesses:
+                    self.label.config(text=f"You Failed")
+                    self.game_over("You Failed")
          else:
-              self.label.config(text="Incorrect! Try again.") #We display an incorrect message
+              self.label.config(text="Invalid input") #We display an incorrect message
 
 # We make the main Tkinter window
 root = Tk() 
