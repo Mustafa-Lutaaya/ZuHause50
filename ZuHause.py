@@ -22,7 +22,7 @@ Max_Wrong_Guesses = 17  # Set the maximum number of wrong guesses before the gam
 
 # Main Game Interface Class 
 class GameInterface:
-    def __init__(self, window, wrong_guesses=0):
+    def __init__(self, window, wrong_guesses=0, score=0, correct_guesses_count = 0):
         self.window = window
         self.window.title("Zu Hause")  # Set The Window's Title
         self.window.geometry("800x600")  # Set the Window's Size
@@ -31,12 +31,14 @@ class GameInterface:
         # Initalize Game Variables 
         self.mode = "light"  # Default to light mode
         self.level = 1  # Deafult level is 1
-        self.target_word = None  # Placeholder for the target word
+        self.target_word = None  # Placeholder for the target word 
         self.hint_text = None  # Placeholder for the hunt
         self.game_active = True # Game State is set to active initially
         self.player_name = None  # Placeholder for player name
         self.correct_guesses = []  # List for correct guesses
         self.wrong_guesses = wrong_guesses  # Track Number of Wrong Guesses
+        self.correct_guesses_count = correct_guesses_count #Initialize Counter For Correctly Guessed Words
+        self.score = score #Initialization Of Score
         self.played_words = [] # Keep Track of Played Words
         
         self.window.bind("<KeyPress>", self.handle_guess) # Bind Key Press to Guess Handler
@@ -58,7 +60,7 @@ class GameInterface:
 
         # Level Display Label
         self.level_label = Label(self.window, text="Level: 1", font=("Raleway", 15))
-        self.level_label.pack(pady=10)
+        self.level_label.pack(side=BOTTOM, pady=20)
         self.level_label.pack_forget()  # Initially Hidden Until The Profile Is Checked
 
         # Display For Guessed Word
@@ -73,6 +75,10 @@ class GameInterface:
         self.hint_button = Button(self.window, text="Hint", command=self.hint)
         self.hint_button.pack(pady=10)
         self.hint_button.pack_forget() #Initially Hidden
+        
+        # Notification Label For Level Up & 5 Wrong Guesses Left
+        self.notification_label = Label(self.window, text="", font=("Arial", 12, "bold"), fg="white", bg="green")
+        self.notification_label.place(x=10,y=10) # Position The Notification At The Top-Left Corner
 
     def color_mode(self):
         #Toggle Between Light & Dark Mode
@@ -313,30 +319,23 @@ class GameInterface:
         if player_name:  
             existing_player = collection.find_one({"name": player_name})  
 
-            if existing_player:  # If Name Exists, We Retrieve Their Level & Display A Welcome Back Message
+            if existing_player:  # If Name Exists, We Retrieve The Level & Score Then Display A Welcome Back Message
                 self.player_name = player_name  
-                self.level = existing_player.get( "level", 1) 
+                self.level = existing_player.get("level", 1)
+                self.score = existing_player.get("score", 0)
                 self.label.config(text=f"Welcome back, {player_name}!")  
-
-                # Then make the level visible
-                self.level_label.pack()
-                self.level_label.config(text=f"Level: {self.level}")
-
-                # Display both a play game button
+                
+                # Display A Play Game Button
                 self.playgame_button = Button(self.window, text="Play Game", command=self.play_game)
                 self.playgame_button.pack(pady=10)
 
-            else:  # if its a new name, Set The Player Name, Create A New MongoDB Profile With Score & Level & Save It Into The Database
+            else:  # if its a new name, Set The Player Name, Create A New MongoDB Profile With Score, Correct Guesses & Level & Save It Into The Database
                 self.player_name = player_name
-                player_data = {"name": player_name,"score": 0,"level": 1,}
+                player_data = {"name": player_name,"score": 0,"level": 1, "correct_guesses_count": 0}
                 collection.insert_one(player_data) 
                 self.label.config(text=f"Good To Have You Here, {player_name}!")
 
-                # We show the level
-                self.level_label.pack()
-                self.level_label.config(text=f"Level: {self.level}")
-
-                # Display Button To Start The Game
+                # Display A Play Game Button
                 self.playgame_button = Button(self.window, text="Play Game", command=self.play_game) 
                 self.playgame_button.pack(pady=10)
 
@@ -345,24 +344,51 @@ class GameInterface:
         else:
             print("No name entered.")  # This enables us to handle empty inputs
 
-    # A Function to start a new game
+    # Start Game Play
     def play_game(self):
         self.game_active = True #Enables guesses after "Play On" button is clicked
         self.playgame_button.pack_forget()
         self.correct_guesses = []  # Reset Correct Guesses
         self.wrong_guesses = 0  # Reset wrong Guesses
         self.select_word()  # Start Playing by selecting a random word in the CSV
-        self.construct_guessed_word()  # We Update the guessed word label with underscores for unguessed letters
-        self.label.config(text=f"Guess a word........")
-        self.hint_button.pack(pady=10) #This will show the hint button
+        self.level_label.pack() #Display The Level Label
+        self.level_label.config(text=f"Level: {self.level}")
         
-    # Updates The Level Display Based On The Current Level
-    def level_message(self):
-        self.level_label.config(text=f"Level: {self.level}")  # This will display what level we are on in the window
-
-    def game_over(self, message):
-        self.game_active = False #This disables guesses after the game is over
-        self.house_label.config(text="")  # We clear the house drawing
+        #Ensure The Score_Label Is Created Only Once
+        if not hasattr(self, 'score_label'):
+            self.score_label = Label(self.window, text=f"Score: {self.score}", font=("Raleway", 15))
+            self.score_label.pack(side=BOTTOM) #Display The Score At The Bottom Of The Screen
+            
+        self.guessed_word_label.config(text=self.construct_guessed_word()) # Display Underscores For Unguessed Letters
+        self.label.config(text=f"Guess a word........")
+        self.hint_button.pack(pady=10) #Unhide The Hint Button
+        
+    # Reset All Game-Related Variables
+    def reset_game_state(self):
+        self.reset_game_state_button.pack_forget()
+        self.target_word = None
+        self.hint_text = None
+        self.correct_guesses = []
+        self.wrong_guesses = 0
+        self.correct_guesses_count = 0
+        self.played_words = []
+        self.game_active = True
+        
+        # Update UI Elements
+        self.label.config(text="Guess A Word .........")
+        self.guessed_word_label.config(text=self.construct_guessed_word())
+        self.house_label.config(text="")
+        self.notification_label.config(text="Everyone Loves A Fresh Start")
+        
+        # Reset Elements For Score & Level Too
+        self.score = 0
+        self.level = 1
+        self.score_label.config(text=f"Score: {self.score}")
+        self.level_label.config(text=f"Level: {self.level}")
+  
+    def continue_game(self, message):
+        self.game_active = False # Disables Guesses
+        self.house_label.config(text="")  # Clear The House Drawing
         
         if hasattr(self,'playgame_button') and self.playgame_button.winfo_exists():
             self.playgame_button.destroy() #This checks if the Play On button already exists and destroys it if it does
@@ -374,11 +400,25 @@ class GameInterface:
         
         self.label.config(text=message)
 
-    # Removes The Play On Button after it has been clicked
+    # Remove The Play On Button after it has been clicked
     def remove_playon_button(self, event):
         self.playgame_button.destroy() #Destroys the Play On Button
         self.play_game() #Restarts the game
-
+    
+    # Display A Notification For Level Up
+    def level_up_notification(self):
+        self.notification_label.config(text=f"Level Up! You're Now On Level {self.level}", fg="white", bg="blue")
+        self.window.after(3000, self.clear_notification) # Clear Notification After 3 Seconds
+    
+    # Display A Notification When There Are Only 5 Wrong Guesses Left    
+    def five_wrong_guesses_left_notification(self):
+        self.notification_label.config(text="Only 5 Wrong Guesses Left!", fg="black", bg="red")
+        self.window.after(3000, self.clear_notification) # Clear Notification After 3 Seconds 
+    
+    # Clear Notification After A Set Amount Of Time
+    def clear_notification(self):
+        self.notification_label.config(text="")
+    
     # Display The Hint For The Current Word If It Exists
     def hint(self):
         if self.hint_text: 
@@ -393,28 +433,35 @@ class GameInterface:
         played_words = player.get("played_words", [])
         normalized_played_words = [word.lower().replace(" ", "_")for word in played_words]
         
-        # print("Normalized Played Words:", normalized_played_words) #This Was Also A Print Debugging Statement
-        
-        # The Logic here is to be able to move on to the next level, when words in one level / csv file have all been played
-        with open("ZuHause50.csv", mode="r") as csvfile:
-            reader = list(csv.reader(csvfile))  # We read the CSV file nto a list of rows
-            available_words = [row for row in reader if row[0].lower().replace(" ", "_") not in normalized_played_words]  # This filters out the already guessed words by making them look exactly identical to those in the CSV
+        # Try To Open The CSV File
+        try:
+            with open("ZuHause50.csv", mode="r") as csvfile:
+                reader = list(csv.reader(csvfile))  # Read the CSV file nto a list of rows
+                available_words = [row for row in reader if row[0].lower().replace(" ", "_") not in normalized_played_words]  # This filters out the already guessed words by making them look exactly identical to those in the CSV
+                
+                #If Words Are Finished The Game Ends & Displays A Message Together With A Reset Game Buttin
+                if not available_words:
+                    self.game_active = False
+                    self.label.config(text="Congragulations, Word Genius")
+                    self.reset_game_state_button = Button(self.window, text="Reset Game", command=self.reset_game_state)
+                    self.reset_game_state_button.pack(pady=10)
+                    return 
+                
+                selected_row = choice(available_words)  # Randomly Select A Word
+                
+                self.target_word = selected_row[0].strip().lower().replace(" ", "_")  # Then set the word to be guessed
+                self.hint_text = selected_row[1]  # We then set the word's hint
+                self.meaning = selected_row[2] # We set the meaning of the word guesses
+                self.translation = selected_row[3]# We set the translation of the word
+                self.translated_definition = selected_row[4]# We set the translation definition too
+                self.target_word = self.target_word.replace(" ", "_") #If the word contains spaces, we automaticaly replace them woth underscores 
+                self.correct_guesses=['_'] * self.target_word.count('_') # And Add space as '_'
+                
+        except FileNotFoundError: # Handle The Case When The File Is Not Found
+            self.label.config(text="CSV File Not Found!")
             
-            #If Words Are Finished The Game Ends & Displays A Message
-            if not available_words:
-                self.game_active = False
-                self.label.config(text="Congragulations, Word Genius")
-                return
-            
-            selected_row = choice(available_words)  # We randomly select a word
-            
-            self.target_word = selected_row[0].strip().lower().replace(" ", "_")  # Then set the word to be guessed
-            self.hint_text = selected_row[1]  # We then set the word's hint
-            self.meaning = selected_row[2] # We set the meaning of the word guesses
-            self.translation = selected_row[3]# We set the translation of the word
-            self.translated_definition = selected_row[4]# We set the translation definition too
-            self.target_word = self.target_word.replace(" ", "_") #If the word contains spaces, we automaticaly replace them woth underscores 
-            self.correct_guesses=['_'] * self.target_word.count('_') # And Add space as '_'
+        except Exception as e: # Handle Any Other Excepted Errors
+            self.label.config(text=f"An Error Occured: {str(e)}")
             
     # Function to construct the guessed word it as well diplays underscores for unguessed letters
     def construct_guessed_word(self):
@@ -426,37 +473,67 @@ class GameInterface:
                 guessed_word += " _ "
         return guessed_word
 
-    # Function to handle the letter guess from the player
+    # Handles Guessing Game Logic Aftermath
     def handle_guess(self, event):
-        if not self.game_active: #This only allows guesses while the game is active
+        if not self.game_active: # Allows Guesses Only When The Game Is active
             return
         
         guessed_letter = event.char.lower()
-        if guessed_letter.isalpha() and len(guessed_letter) == 1:  # We check if player has input a single letter
+        
+        if guessed_letter.isalpha() and len(guessed_letter) == 1:  #  Check If Player Has Input A Single Letter
             if guessed_letter in self.target_word:
                 if guessed_letter not in self.correct_guesses:
                     self.correct_guesses.append(guessed_letter)
                     self.label.config(text=f"Good Guess")
-            else:
-                self.wrong_guesses += 1  # We increase the number of wrong guesses
-                self.draw_house(self.wrong_guesses)  # And call function to build part of the house
+            else: #Increments Wrong Guesses Which Facilitate House Drawing
+                self.wrong_guesses += 1  
+                self.draw_house(self.wrong_guesses)  
                 self.label.config(text=f"Wrong Guess")
+                
+                if self.wrong_guesses == (Max_Wrong_Guesses -5):
+                    self.five_wrong_guesses_left_notification()
 
             self.guessed_word_label.config(text=self.construct_guessed_word())
 
-            # If all letter's have been guessed, then we update the database with the word then move on to the next word
+            # After Correct Guesses, Update Database
             if self.construct_guessed_word().replace(" _ ", "") == self.target_word:
                 player=collection.find_one({"name": self.player_name})
                 played_words = player.get("played_words", [])
                 
+                # Calculate The Score Based On Word Length 
+                word_score = 10 
+                if len(self.target_word) > 14:
+                    word_score = 15
+                
+                # Update The Score Both Locally & In The Databse
+                self.score += word_score 
+                collection.update_one({"name": self.player_name},{"$set":{"score": self.score}})
+                
+                #Update Correct Guesses Count Too & Check If Level-Up Is Needed
+                self.correct_guesses_count += 1
+                if self.correct_guesses_count >= 5:
+                    self.level += 1
+                    self.correct_guesses_count = 0 # Immediate Reset For The New Level Counter
+                    
+                    collection.update_one(
+                        {"name": self.player_name},
+                        {"$set": {"level": self.level, "correct_guesses_count": self.correct_guesses_count}}
+                    )
+                    
+                    self.level_up_notification() # Show Level-Up Notification
+                
+                # Display The Word, Meanings And Score
                 self.label.config(
                     text=f"Correct! The Word Was: {self.target_word.capitalize()}\n"
                     f"Meaning: {self.meaning}\n\n"
                     f"AUF DEUTSCH: {self.translation}\n"
-                    f"Definition: {self.translated_definition}"
+                    f"Definition: {self.translated_definition}\n"
+                    f"Your Current Score: {self.score}" 
                     )
                 
-                self.window.after(3000, self.game_over, "Play On")
+                self.score_label.config(text=f"Score: {self.score}")
+                
+                self.window.after(3000, self.continue_game, "Play On")
 
                 if self.target_word not in played_words:
                     played_words.append(self.target_word) #This adds the guessed word to the played words list
@@ -464,18 +541,16 @@ class GameInterface:
                         {"name": self.player_name},
                         {"$set": {"played_words": played_words}}, 
                     )
-                    
-                    # print("Updated Played Words:", played_words) #This Was One Of My Print Debugging Statements
  
             else:
                 if self.wrong_guesses >= Max_Wrong_Guesses:
                     self.label.config(text=f"You Failed")
-                    self.game_over("You Failed")
+                    self.continue_game("You Failed")
         else:
             self.label.config(text="Invalid input")  # We display an incorrect message
 
 
-# We make the main Tkinter window
+# Build the main Tkinter window
 root = Tk()
 app = GameInterface(root)  # Created an instance of the Interface class
 root.mainloop()  # Initiated the Tkinter main loop, where we display the window and handle user Interactions
