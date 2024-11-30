@@ -4,17 +4,11 @@ from pymongo.server_api import ServerApi #Import ServerAPI for MongoDB Connectio
 import csv  # Import the csv module to read and write csv files
 from random import choice # Import the 'choice' function from the 'random' module to make random selections
 
-# MongoDB Connection Setup
+# MongoDB URI Connection String
 uri = "mongodb+srv://MLutaaya:Satire6Digits@wordguess.cr5m5.mongodb.net/?retryWrites=true&w=majority&appName=ZuHause" # MongoDB URI Connection string
 client = MongoClient(uri, server_api=ServerApi("1"))
 
-#Test MongoDB Connection Setup
-try:
-    client.admin.command("ping") # Send a ping to confirm a successful connection
-    print("Pinged your deployment. You successfully connected to MongoDB!")
-except Exception as e:
-    print(e)
-
+# Database Connection
 db = client["ZuHause"]  # Acces the "ZuHause" Database
 collection = db["PlayersProfiles"]  # Access the "PlayersProfiles" Collection in the Databse
 
@@ -25,7 +19,7 @@ class GameInterface:
     def __init__(self, window, wrong_guesses=0, score=0, correct_guesses_count = 0):
         self.window = window
         self.window.title("Zu Hause")  # Set The Window's Title
-        self.window.geometry("800x600")  # Set the Window's Size
+        self.window.geometry("1000x600")  # Set the Window's Size
         self.window.resizable(0, 0)  # Disabled Window Resizing
         self.current_screen = self.setup_ui # Tracks The Main Screen 
         
@@ -53,7 +47,7 @@ class GameInterface:
     '''UI SETUP'''    
     def setup_ui(self):
         #Sets Up The UI Elemenys Of The Game
-        self.label = Label(self.window, text="Wilkommen Zu Hause", font=("Raleway Bold", 16))
+        self.label = Label(self.window, text="WILKOMEN ZU HAUSE", font=("Arial Rounded MT Bold", 18, "bold"))
         self.label.pack(pady=30)
 
         # Button To Enter The Player's Name
@@ -65,16 +59,16 @@ class GameInterface:
         self.change_color_mode_button.place(relx=1, rely=0, anchor=NE)  # Postion the Button in the right top corner
 
         # Level Display Label
-        self.level_label = Label(self.window, text="Level: 1", font=("Raleway", 15))
+        self.level_label = Label(self.window, text="Level: 1", font=("Arial Rounded MT Bold", 15))
         self.level_label.pack(side=BOTTOM, pady=20)
         self.level_label.pack_forget()  # Initially Hidden Until The Profile Is Checked
 
         # Display For Guessed Word
-        self.guessed_word_label = Label(self.window, text="", font=("Raleway", 15))
+        self.guessed_word_label = Label(self.window, text="", font=("Arial Rounded MT Bold", 15))
         self.guessed_word_label.pack(pady=10)
 
         # Display For House Drawing 
-        self.house_label = Label(self.window, text="", font=("Arial", 15), justify=CENTER, bg="grey")
+        self.house_label = Label(self.window, text="", font=("Arial Rounded MT Bold", 15), justify=CENTER, bg="grey")
         self.house_label.place(relx=1.0, rely=1.0, anchor=SE) #Here we have set the house_lael to the bottom right corner
 
         # Button To Show Hints
@@ -84,29 +78,56 @@ class GameInterface:
         
         # Profiles Button 
         self.profiles_button = Button(self.window, text="Profiles", command=self.show_profiles)
-        self.profiles_button.place(relx=0.0, rely=1.0, anchor=SW, x=10, y=-10)
+        self.profiles_button.place(relx=0.0, rely=1.0, anchor=SW)
         
         # Profiles Label
         self.profiles_label = Label(self.window, text="", justify="left", anchor="w", width=50, height=10, bg="lightgrey", relief="solid")
         self.profiles_label.pack_forget() #Initialyy Hide It
         
         # Notification Label For Level Up & 5 Wrong Guesses Left
-        self.notification_label = Label(self.window, text="", font=("Arial", 12, "bold"), fg="white", bg="green")
+        self.notification_label = Label(self.window, text="", font=("Arial Rounded MT Bold", 12, "bold"), fg="white", bg="green")
         self.notification_label.place(x=10,y=10) # Position The Notification At The Top-Left Corner
         
+        self.apply_color_mode()
+    
+    
+    
+    '''UI COLOR SETTINGS'''
+    def apply_color_mode(self):
+        #Apply Color Mode Settings To The Window Based On The Current Mode
+        if self.mode == "light":  # Set To Light Mode
+            self.window.configure(bg="#d7bde2")  
+            self.label.config(bg="#d7bde2", fg="black") 
+            self.level_label.config(bg="#d7bde2", fg="black")  
+        else: # Set To Dark Mode
+            self.window.configure(bg="#17202a")
+            self.label.config(bg="#17202a", fg="white")
+            self.level_label.config(bg="#17202a", fg="white") 
+    
     def color_mode(self):
-        #Toggle Between Light & Dark Mode
-        if self.mode == "light":  # Changes To Dark Mode
-            self.window.configure(bg="#17202a")  
-            self.mode = "dark"
-            self.label.config(bg="#17202a", fg="white") 
-            self.level_label.config(bg="#17202a", fg="white")  
-        else: #Changes To Light Mode
-            self.window.configure(bg="#d7bde2")
+        # Toggle Between Light & Dark Mode
+        if self.mode == "light":  # Change To Dark Mode
+            self.mode = "dark" 
+        else: # Change To Light Mode
             self.mode = "light"
-            self.label.config(bg="#d7bde2", fg="black")
-            self.level_label.config(bg="#d7bde2", fg="black") 
+        
+        self.apply_color_mode()
+        
+    def apply_color_mode_for_child_window(self, child_window):
+        if self.mode == "light":
+            child_window.configure(bg="#d7bde2") # Light Mode Colors
+        else:
+            child_window.configure(bg="#17202a") # Dark Mode Colors
             
+    def apply_color_for_widget(self, widget):
+        if self.mode == "light":
+            widget.config(bg="#d7bde2", fg="black") # Light Mode Colors
+        else:
+            widget.config(bg="#17202a", fg="white") # Dark Mode Colors
+            
+
+
+    '''HOUSE DESIGN'''
     def draw_house(self, wrong_guesses):
         #Draws The House Based On The Number Of Wrong Moves
         house = [
@@ -295,40 +316,22 @@ class GameInterface:
         self.name_prompt.title("Enter Your Name")
 
         # Color_Mode Configurations For The Window
-        if self.mode == "light":
-            self.name_prompt.configure(bg="#d7bde2")
-        else:
-            self.name_prompt.configure(bg="#17202a")
+        self.apply_color_mode_for_child_window(self.name_prompt)
 
         # Add A Label In The New Window
-        self.name_label = Label(self.name_prompt,text="What's your Name? / Wie heissen Sie?",font=("Raleway Bold", 15, "bold"),)
+        self.name_label = Label(self.name_prompt,text="What's your Name? / Wie heissen Sie?",font=("Arial Rounded MT Bold", 15, "bold"),)
         self.name_label.pack(pady=10)
-
-        # Add Text color For The Label According To The Mode:
-        if self.mode == "light":
-            self.name_label.config(bg="#d7bde2", fg="black")  # If light mode, text will be black
-        else:
-            self.name_label.config(bg="#17202a", fg="white")  # If dark mode, text will be white
+        self.apply_color_for_widget(self.name_label)
 
         # Add An Entry Widget For The User To Type Their Name
-        self.name_entry = Entry(self.name_prompt, font=("Raleway", 18, "bold"))
+        self.name_entry = Entry(self.name_prompt, font=("Arial Rounded MT Bold", 18, "bold"))
         self.name_entry.pack(pady=10)
-
-        # Add Text Color For The Widget Depending On The Mode
-        if self.mode == "light":
-            self.name_entry.config(fg="black")  # If light mode , text will be black
-        else:
-            self.name_entry.config(fg="black")  # If dark mode, text will be white
+        self.apply_color_for_widget(self.name_entry)
 
         # Submit Button With A Function To Handle The Name Input
         self.submit_button = Button(self.name_prompt, text="Submit", command=self.submit_name)
         self.submit_button.pack(pady=10)
-
-        # Add Text Color For The Button Too Depending on the mode
-        if self.mode == "light":
-            self.submit_button.config(fg="black")
-        else:
-            self.submit_button.config(fg="black")
+        self.apply_color_for_widget(self.submit_button)
 
     # Name Submission & Player Profile Handling
     def submit_name(self):
@@ -384,11 +387,11 @@ class GameInterface:
         
         #Ensure The Score_Label Is Created Only Once
         if not hasattr(self, 'score_label'):
-            self.score_label = Label(self.window, text=f"Score: {self.score}", font=("Raleway", 15))
+            self.score_label = Label(self.window, text=f"Score: {self.score}", font=("Arial Rounded MT Bold", 15))
             self.score_label.pack(side=BOTTOM) #Display The Score At The Bottom Of The Screen
         
         if not hasattr(self, 'level_label'):
-            self.score_label = Label(self.window, text=f"Level: {self.level}", font=("Raleway", 15))
+            self.score_label = Label(self.window, text=f"Level: {self.level}", font=("Arial Rounded MT Bold", 15))
             self.level_label.pack(side=TOP) #Display The Score At The Bottom Of The Screen
         
         if not hasattr(self, 'guessed_word_label'):
@@ -429,7 +432,7 @@ class GameInterface:
                     }}
                 )
             else:
-                print("Player not found in Databse")
+                print("Player not found in Database")
         
         self.window.destroy() #Then Close The Current Window
         
@@ -663,9 +666,11 @@ class GameInterface:
         result = collection.delete_one({"name": player_name})
         
         if result.deleted_count > 0:
-            self.label.config(text=f" Success! {player_name} Profile Deleted Successfully")
+            self.notification_label.config(text=f" Success! {player_name} Profile Deleted Successfully")
+            self.window.after(3000, self.clear_notification)
         else:
-            self.label.config(text=f"Error! {player_name} Not Found")
+            self.notification_label.config(text=f"Error! {player_name} Not Found")
+            self.window.after(3000, self.clear_notification)
         
         #Refresh The Profiles List After Deletion
         self.show_profiles()
@@ -681,7 +686,7 @@ class GameInterface:
          
          # Only Show A Back Button If A Previous Screen Function Is Provided   
         self.back_button = Button(self.window, text="Main Menu", command=lambda: self.go_back(previous_screen_function))
-        self.back_button.place(relx=0.0, rely=1.0, anchor=SW, x=10, y=-10)
+        self.back_button.place(relx=0.0, rely=1.0, anchor=SW)
     
     # Logsout Player, Clears Screen, Then Lands Back To Previous Screen
     def go_back(self, previous_screen_function):
@@ -694,7 +699,8 @@ class GameInterface:
     def clear_screen(self):
         for widget in self.window.winfo_children():
             widget.destroy()
-               
+            
+
 
 #  Initiate The Tkinter main loop, Where The Display Window Appears And Handle User Interactions
 root = Tk()
