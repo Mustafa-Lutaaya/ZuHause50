@@ -346,7 +346,6 @@ class GameInterface:
                 self.playgame_button = Button(self.window, text="Play Game", command=self.play_game)
                 self.playgame_button.pack(pady=10)
                 self.profiles_button.place_forget()
-                self.show_back_button(self.setup_ui)
 
             else:  # if its a new name, Set The Player Name, Create A New MongoDB Profile With Score, Correct Guesses & Level & Save It Into The Database
                 self.player_name = player_name
@@ -356,7 +355,6 @@ class GameInterface:
 
                 # Remove The Profiles Button Then Display A Play Game Button
                 self.profiles_button.place_forget()
-                self.show_back_button(self.setup_ui)
                 self.playgame_button = Button(self.window, text="Play Game", command=self.play_game) 
                 self.playgame_button.pack(pady=10)
                 
@@ -373,7 +371,6 @@ class GameInterface:
     def play_game(self):
         self.playgame_button.pack_forget() # Remove Play Game Button
         self.profiles_button.place_forget() # Remove Profiles Button
-        self.show_back_button(self.setup_ui) # Replace It With Main Menu Button
         self.game_active = True # Enables guesses after "Play On" button is clicked
         self.correct_guesses = []  # Reset Correct Guesses
         self.wrong_guesses = 0  # Reset wrong Guesses
@@ -416,9 +413,9 @@ class GameInterface:
         self.playgame_button.pack_forget() #Destroys the Play On Button
         self.play_game() #Restarts the game
         
-    # Reset All Game-Related Variables
+    # Reset The Database Scores, Levels & Played Words, Then Restart The Game Window
     def reset_game_state(self):
-        # Clear The Player's Level, Score & Played Words From Database Too
+        # Clear The Player's Level, Score & Played Words From Database 
         if self.player_name:
             player = collection.find_one({"name": self.player_name})
             
@@ -434,19 +431,12 @@ class GameInterface:
             else:
                 print("Player not found in Databse")
         
-        # Reset Elements For Score & Level
-        self.score = 0
-        self.level = 1
-        self.correct_guesses = []
-        self.target_word = None
-        self.wrong_guesses = 0
+        self.window.destroy() #Then Close The Current Window
         
-        self.score_label.config(text=f"Score: {self.score}")
-        self.level_label.config(text=f"Level: {self.level}")    
-        
-        #Remove Reset Button & Start Playing Again
-        self.reset_game_state_button.pack_forget()
-        self.play_game()
+        #Re-Open The Window & Start The Game Afresh
+        root = Tk() # Create A New Instance of TK
+        app = GameInterface(root)  # Create A New instance Of The Interface class
+        root.mainloop()  # Start The New Game Widnow
 
 
     
@@ -697,7 +687,6 @@ class GameInterface:
     def go_back(self, previous_screen_function):
         if hasattr(self, 'back_button'):
             self.back_button.place_forget()
-        self.logout()
         self.clear_screen()
         previous_screen_function()
     
@@ -705,14 +694,9 @@ class GameInterface:
     def clear_screen(self):
         for widget in self.window.winfo_children():
             widget.destroy()
-            
-    # Logs Out The Player Once On Press Of The Back To Main Menu Button During Game Play
-    def logout(self):
-        self.player_name = None
-        self.game_active = False
                
 
-# # Initiate The Tkinter main loop, Where The Display Window Appears And Handle User Interactions
+#  Initiate The Tkinter main loop, Where The Display Window Appears And Handle User Interactions
 root = Tk()
 app = GameInterface(root)  # Create An instance Of The Interface class
 root.mainloop()  
