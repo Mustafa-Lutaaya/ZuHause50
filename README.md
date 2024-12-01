@@ -1,65 +1,97 @@
-Redi-School | Python Final Project | Word Guess Game: Zu Hause
+ZUHAUSE50:
+ZuHause50 Is A Word Guessing Game  Whose Idea Was Inspired By A Word Game That Me, My Sister & Brother Used To Play Growing Up Called "Buyumba" Which Means "Home".
 
+"ZuHause" The German Word Simply Means Home While The Number "50" Represents 50 Words. "ZuHause50" Is Also A Fusion Of Tech Between Two Languages.
 
-ZUHAUSE:
-Zu Hause is a name that i came up with for my final project due to its Nature. ZU Hause project Will Be A Word Guess Game That Allows User to Guess Letters.
+Because The 50 Words Are Commonly Used English Tech Words That Once Guessed Correctly Lead To A Display Of Their Deutsch Translation & Definition To The Player.
+ 
+FEATURES
+- User Profiles & Data Stored In MongoDB
+- Word Guessing With Level Progression
+- Responsive GUI With Tkinter
+- Profiles Can Be Managed (Created or Deleted).
 
+INSTALLATION
+1. Install Python 3.x & MongoDB
+2. Install Required Libraries (pymongo via pip3)
+3. Clone The Game Repository,Run A MongoDB Instance & Test The MongoDB Connection
+4. Use The CSV File As The Word List For The Game
 
-BACKGROUND
-During my childood, my late step-brother would make me and my sister play a word guessing game.
-He would divide a paper into two columns and then draw "_" for the word's letters both sides. (One Being Mine and One For My Sister)
+USAGE
+- Run The Game With : python ZuHause.py
+- Create A New Profile Or Log In
+- Play By Checking For Hints & Guessing Words
 
-We would then go ahead and whoever got it first before a simple house was built and the word HOME added in the roof, 1 point would be added to their score before we would go on to another word.
+API DOCUMENTATION
+Game Interface Class: This is the main driver for the game's functionality, containing methods for UI Creation, Gameplay Logic & Database Interaction. Mainly Consist Of;
 
-For Example:
-If we had to guess a word "BOY",
-Lay out would be like this:
+1. User Login:
+- This Part Of The API Manages Player Authentication & Profile Management.
+- Login Means That The System Checks If A Player Already Has An Exisiting Profile In The Database. If Not, The System Creates A New Profile.
 
-Mustafa             Rose
-_ _ _     |    _ _ _
-          |
-          |
+The Login Process Consists Of:
+i. ask_name_window()
+Prompts The Player To Enter Their Name & Stores It In The Database If It Doesnt Exist.
 
-We would each take turns and for every wrong guess a line house would be built: 
-That means we would each have about 20 moves(with small windows built too) to build a whole house and loose.
-If the word HOME was added to the roof. It means the guessor has lost and would have to move on to the next one.
-  ______
- / HOME \
- --------
- |   _  |
- |_ |_|_|
+ii. submit_name()
+Handles Submitting The Player's Name. If The Player Exists In The Database, It Loads Their Profile Or Else Creates A New Profile.
 
+2. Word Selection:
+- This Part Of The API Is Responsible For Selecting The Word That The Player HaS To Guess.
+- The Game Picks A Random Word From The CSV Which COntains The Words, Hints & Meanings.
+- It Ensures That The Word Has Not Been Guessed Yet In The Current Session To Prevent Repeats.
 
-ZU HAUSE DYNAMICS
-With that brief background, i would like to bring that game to the Tech Life. 
-Named Zu Hause a Deutsch Word for the English noun "home", the Game will have the same play mode as before.
-Difference is that, once a player guesses the English word correctly, its Deutsch meaning is displayed too.
+The Word Selection Process Consists Of:
+i. select_word()
+Selects A Random Word From The CSV That Hasn't Been Guessed Yet.
 
-For example:
-If The word was BOY and player gets it correctly. A display like this comes up:
-_______________________________________
-You Guessed it right!!!!!!!!!!!!!!!!!!
-In Deutsch:
-Die Frau / Die Frauen (pl)
-Press Next To Continue to aother word__
+3. GamePlay Logic:
+- This Ecompasses The Rules & Mechanics That Run The Game. 
+- It Includes Handling Player Guesses, Providing Feeback Whether Its Correct Or Incorrect, Tracking Progress Of Letters Of Already Guessed Plus Remaining Attempts, Level Progression & Game End Where Player Can Reset The Game. 
 
+The GamePlay Logic Consists Of:
+i. play_game()
+Starts The Gameplay By Selecting A Random Word From The CSV File & Managing The UI Updates For Gameplay
 
-ZU HAUSE MODE
-1.Player Profiles will be created and saved on a database.
-2.Words will be selected randomly from CSV Files which will have about 50 word depending on the German Level.
-3.For every word guessed right, it will be added to the players profile in the databse so that its not played again. This will faciliate getting to newer levels. Hints for the word will also be displayed while guessing.
+ii. handle_guess(event)
+Handles The Player's Guess Input, Updates The Guessed Word And Checks If The Guess Is Correct Or Wrong
 
+iii. continue_game(message)
+Allows The Player To Continue The Game AFter They Guess A Word Or Fail To Guess The Word Within The Allowed Attempts.
 
-ZUHAUSE GOALS
-This is to make a game which can help the player learn what the words they have guessed mean in German.
-
+iv. clear_notification()
+Clears The Notification Message After A Set Amount Of Time
 
 ZU HAUSE Blueprint.
 1. VSC Code to write the code.
 2. MongoDB to store player profiles, scores and words they have guessed already.
 3. Tkinter to design the Graphical User Interactive mode.
-4. CSV to store words and their levels.
-5. Win10's Toast to notify the user when they have a few wrong guesses left or moved on to another level.
-6. API's to get hints for the randomly selected word.
+4. CSV to store words.
 7. GITHUB to share the code.
-8. Virtual enviroments to install the libraries like pymongo.
+8. Virtual enviroment to install the libraries like pymongo.
+
+IMPORTANT TO NOTE:
+- Once ZuHause Is In GamePlay Only Way Out Is By CLosing The Window.
+- Profiles Can Only Be Viewed At The Start Of The Game Before Name Submission
+
+TROUBLESHOOTING.
+Common Issues:
+1. Error: FileNotFoundError: ZuHause50.csv
+Ensure The CSV File Is In The Same Directory As The Python Script & Named ZuHause50.csv
+2. MongoDB Connection Error
+Make Sure Your MongoDB Service Is Running & Accesible.
+
+CONTRIBUTION
+Contributions Are Welcome For Bug Fixes, Enhancements & Additional Features After Contacting Me & Letting Me Know Where Exactly You Would Like To Improve Or Addon. After Contact & Aprroval You Will Get Instructions On Steps For Contribution.
+
+LICENSE
+This Project Is Licensed Under The MIT License.
+
+
+Screenshots & Media 
+
+  ______
+ / HOME \
+ --------
+ |   _  |
+ |_ |_|_|
