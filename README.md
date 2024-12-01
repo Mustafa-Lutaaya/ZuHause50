@@ -19,6 +19,7 @@ INSTALLATION
 4. Use The CSV File As The Word List For The Game
 
 USAGE
+- Navigate to the src folder 
 - Run The Game With : python ZuHause.py
 - Create A New Profile Or Log In
 - Play By Checking For Hints & Guessing Words
