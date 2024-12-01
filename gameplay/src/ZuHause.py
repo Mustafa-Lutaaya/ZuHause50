@@ -23,7 +23,7 @@ class GameInterface:
         self.window.resizable(0, 0)  # Disabled Window Resizing
         self.current_screen = self.setup_ui # Tracks The Main Screen 
         
-        # Initalize Game Variables 
+        # Initalize Game Variables  
         self.mode = "light"  # Default to light mode
         self.level = 1  # Deafult level is 1
         self.target_word = None  # Placeholder for the target word 
@@ -503,6 +503,7 @@ class GameInterface:
 
             # After Correct Guesses, Update Database
             if self.construct_guessed_word().replace(" _ ", "") == self.target_word:
+                self.game_active = False
                 player=collection.find_one({"name": self.player_name})
                 played_words = player.get("played_words", [])
                 
