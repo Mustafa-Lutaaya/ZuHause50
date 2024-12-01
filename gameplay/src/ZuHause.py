@@ -47,7 +47,6 @@ class GameInterface:
     '''UI SETUP'''    
     def setup_ui(self):
         self.game_active = False 
-        
         #Sets Up The UI Elemenys Of The Game
         self.label = Label(self.window, text="WILKOMEN ZU HAUSE", font=("Arial Rounded MT Bold", 18, "bold"))
         self.label.pack(pady=30)
@@ -323,7 +322,7 @@ class GameInterface:
         # Add A Label In The New Window
         self.name_label = Label(self.name_prompt,text="What's your Name? / Wie heissen Sie?",font=("Arial Rounded MT Bold", 15, "bold"),)
         self.name_label.pack(pady=10)
-        self.apply_color_for_widget(self.name_label)
+        self.apply_color_for_widget(self.name_label) 
 
         # Add An Entry Widget For The User To Type Their Name
         self.name_entry = Entry(self.name_prompt, font=("Arial Rounded MT Bold", 18, "bold"))
