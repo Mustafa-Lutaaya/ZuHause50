@@ -1,6 +1,8 @@
 ZUHAUSE50:
 ZuHause50 Is A Word Guessing Game  Whose Idea Was Inspired By A Word Game That Me, My Sister & Brother Used To Play Growing Up Called "Buyumba" Which Means "Home".
+
 "ZuHause" The German Word Simply Means Home While The Number "50" Represents 50 Words. "ZuHause50" Is Also A Fusion Of Tech Between Two Languages.
+
 Because The 50 Words Are Commonly Used English Tech Words That Once Guessed Correctly Lead To A Display Of Their Deutsch Translation & Definition To The Player.
  
 FEATURES
@@ -28,10 +30,11 @@ Game Interface Class: This is the main driver for the game's functionality, cont
 - Login Means That The System Checks If A Player Already Has An Exisiting Profile In The Database. If Not, The System Creates A New Profile.
 
 The Login Process Consists Of:
-i. ask_name_window()
+
+i. ask_name_window()-
 Prompts The Player To Enter Their Name & Stores It In The Database If It Doesnt Exist.
 
-ii. submit_name()
+ii. submit_name()-
 Handles Submitting The Player's Name. If The Player Exists In The Database, It Loads Their Profile Or Else Creates A New Profile.
 
 2. Word Selection:
@@ -40,7 +43,8 @@ Handles Submitting The Player's Name. If The Player Exists In The Database, It L
 - It Ensures That The Word Has Not Been Guessed Yet In The Current Session To Prevent Repeats.
 
 The Word Selection Process Consists Of:
-i. select_word()
+
+i. select_word()-
 Selects A Random Word From The CSV That Hasn't Been Guessed Yet.
 
 3. GamePlay Logic:
@@ -48,16 +52,17 @@ Selects A Random Word From The CSV That Hasn't Been Guessed Yet.
 - It Includes Handling Player Guesses, Providing Feeback Whether Its Correct Or Incorrect, Tracking Progress Of Letters Of Already Guessed Plus Remaining Attempts, Level Progression & Game End Where Player Can Reset The Game. 
 
 The GamePlay Logic Consists Of:
-i. play_game()
+
+i. play_game()-
 Starts The Gameplay By Selecting A Random Word From The CSV File & Managing The UI Updates For Gameplay
 
-ii. handle_guess(event)
+ii. handle_guess(event)-
 Handles The Player's Guess Input, Updates The Guessed Word And Checks If The Guess Is Correct Or Wrong
 
-iii. continue_game(message)
+iii. continue_game(message)-
 Allows The Player To Continue The Game AFter They Guess A Word Or Fail To Guess The Word Within The Allowed Attempts.
 
-iv. clear_notification()
+iv. clear_notification()-
 Clears The Notification Message After A Set Amount Of Time
 
 ZU HAUSE Blueprint.
@@ -69,8 +74,24 @@ ZU HAUSE Blueprint.
 8. Virtual enviroment to install the libraries like pymongo.
 
 IMPORTANT TO NOTE:
+
 - Once ZuHause Is In GamePlay Only Way Out Is By CLosing The Window.
 - Profiles Can Only Be Viewed At The Start Of The Game Before Name Submission
+
+NOTABLE RESOURCES 
+
+- W3Schools MongoDB Tutorial : https://www.w3schools.com/mongodb/index.php
+- Datacamp's Gui Tkinter Tutorial : https://www.datacamp.com/tutorial/gui-tkinter-python
+- Linie 1 A1 - B1 Deutsch Books & ChatGPT For German Words & Translation
+
+
+Screenshots 
+![alt text](<Dark Mode ScreenShot.jpg>)
+![alt text](<../imgs/Light Mode ScreenShot.jpg>)
+![alt text](<Name Entry ScreenShot.jpg>)
+![alt text](<Game Play ScreenShot.jpg>)
+![alt text](<../imgs/Profile ScreenShot.jpg>)
+![alt text](<Game Final Screenshot.jpg>)
 
 TROUBLESHOOTING.
 Common Issues:
@@ -84,12 +105,3 @@ Contributions Are Welcome For Bug Fixes, Enhancements & Additional Features Afte
 
 LICENSE
 This Project Is Licensed Under The MIT License.
-
-
-Screenshots & Media 
-
-  ______
- / HOME \
- --------
- |   _  |
- |_ |_|_|

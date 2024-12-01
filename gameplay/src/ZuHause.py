@@ -46,6 +46,8 @@ class GameInterface:
         
     '''UI SETUP'''    
     def setup_ui(self):
+        self.game_active = False 
+        
         #Sets Up The UI Elemenys Of The Game
         self.label = Label(self.window, text="WILKOMEN ZU HAUSE", font=("Arial Rounded MT Bold", 18, "bold"))
         self.label.pack(pady=30)
