@@ -17,6 +17,8 @@ INSTALLATION
 3. Clone The Game Repository,Run A MongoDB Instance & Test The MongoDB Connection
 4. Use The CSV File As The Word List For The Game
 
+***NOTE: USE THE FILES FROM THE SRC FOLDER LOCATED IN THE GAME PLAY FOLDER. ITS WHERE THE FINAL COMMITS OF THE RIGHT CODE WERE DONE. WHILE IN THE SRC FOLDER STILL, IGNORE THE WORDS&VERBS FOLDER.
+
 USAGE
 - Run The Game With : python ZuHause.py
 - Create A New Profile Or Log In
