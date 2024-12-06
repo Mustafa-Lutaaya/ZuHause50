@@ -6,16 +6,23 @@ ZuHause50 Is A Word Guessing Game  Whose Idea Was Inspired By A Word Game That M
 Because The 50 Words Are Commonly Used English Tech Words That Once Guessed Correctly Lead To A Display Of Their Deutsch Translation & Definition To The Player.
  
 FEATURES
-- User Profiles & Data Stored In MongoDB
+- User Profiles & Data Stored In MongoDB & Can Be Viewed In Game In Highest Score Order
 - Word Guessing With Level Progression
 - Responsive GUI With Tkinter
-- Profiles Can Be Managed (Created or Deleted).
+
 
 INSTALLATION
-1. Install Python 3.x & MongoDB
-2. Install Required Libraries (pymongo via pip3)
-3. Clone The Game Repository,Run A MongoDB Instance & Test The MongoDB Connection
-4. Use The CSV File As The Word List For The Game
+1. Install Python 3.x On Windows
+2. Clone The Game Repository.
+3. Navigate To The gameplay Directory.
+4. Create A Virtual Enviroment By Running: " python -m venv myenv " in the command prompt.
+5. Navigate To The Enviroment
+5. Activate The Enviroment On Windows By Running: " \Scripts\Activate.ps1
+6. Install Required Libraries By Running: " pip3 install pymongo "
+7. Navigate Back To The src Directory In The Gameplay Directory
+7. Test The MongoDB Connection By Typing " python test_mongo_connection.py "
+8. Run The Game With: " python ZuHause.py "
+9. Enter Your Name To Create A Profile. ENJOY !!!!!
 
 USAGE
 - Run The Game With : python ZuHause.py
@@ -75,7 +82,7 @@ ZU HAUSE Blueprint.
 
 IMPORTANT TO NOTE:
 
-- Once ZuHause Is In GamePlay Only Way Out Is By CLosing The Window.
+- Once ZuHause Is In GamePlay Only Way Out Is By Closing The Window.
 - Profiles Can Only Be Viewed At The Start Of The Game Before Name Submission
 
 NOTABLE RESOURCES 
