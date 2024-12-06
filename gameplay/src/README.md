@@ -13,12 +13,14 @@ FEATURES
 - Profiles Can Be Managed (Created or Deleted).
 
 INSTALLATION
-1. Install Python 3.x & MongoDB
-2. Install Required Libraries (pymongo via pip3)
-3. Clone The Game Repository,Run A MongoDB Instance & Test The MongoDB Connection
-4. Use The CSV File As The Word List For The Game
+1. Install Python 3.x
+2. Create a virtual enviroment
+3. Install Required Libraries (pymongo via pip3)
+4. Clone The Game Repository & Test The MongoDB Connection
+5. Use The CSV File As The Word List For The Game
 
 USAGE
+- Navigate To The src Folder
 - Run The Game With : python ZuHause.py
 - Create A New Profile Or Log In
 - Play By Checking For Hints & Guessing Words

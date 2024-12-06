@@ -1,4 +1,5 @@
 ZUHAUSE50:
+
 ZuHause50 Is A Word Guessing Game  Whose Idea Was Inspired By A Word Game That Me, My Sister & Brother Used To Play Growing Up Called "Buyumba" Which Means "Home".
 
 "ZuHause" The German Word Simply Means Home While The Number "50" Represents 50 Words. "ZuHause50" Is Also A Fusion Of Tech Between Two Languages.
@@ -25,6 +26,7 @@ INSTALLATION
 9. Enter Your Name To Create A Profile. ENJOY THE GAME !!!!!
 
 USAGE
+- Navigate to the src folder 
 - Run The Game With : python ZuHause.py
 - Create A New Profile Or Log In
 - Play By Checking For Hints & Guessing Words
