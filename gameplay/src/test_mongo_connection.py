@@ -1,10 +1,17 @@
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
+import json # Import JSON To Handle Configuration File
 
-# MongoDB URI COnnection String
-uri = "mongodb+srv://MLutaaya:Satire6Digits@wordguess.cr5m5.mongodb.net/?retryWrites=true&w=majority&appName=ZuHause"
+# Load Configuration File
+with open(r"C:\Users\ReDI User\Desktop\PythonFinalProject\gameplay\src\config.json") as config_file:
+    config = json.load(config_file)
+    
+# Get The MongoDB URI From The COnfiguration
+uri = config.get("MONGO_URI")
+if not uri:
+    raise ValueError("MONGO_URI is missing in the configuration file.")
 
-# Connect To MongoDB Client
+# Create The MongoDB Client
 client = MongoClient(uri, server_api=ServerApi("1"))
 
 # Test MongoDB Connection

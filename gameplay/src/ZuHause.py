@@ -1,11 +1,20 @@
-from tkinter import *  #Imported tkinter for GUI Functionality
+from tkinter import *  #Imported tkinter for GUI Functionality xz 
 from pymongo.mongo_client import MongoClient #Import MongoDB Client
 from pymongo.server_api import ServerApi #Import ServerAPI for MongoDB Connection Handling
 import csv  # Import the csv module to read and write csv files
 from random import choice # Import the 'choice' function from the 'random' module to make random selections
+import json # Import JSON To Handle Configuration File
 
-# MongoDB URI Connection String
-uri = "mongodb+srv://MLutaaya:Satire6Digits@wordguess.cr5m5.mongodb.net/?retryWrites=true&w=majority&appName=ZuHause" # MongoDB URI Connection string
+# Load Configuration File
+with open(r"C:\Users\ReDI User\Desktop\PythonFinalProject\gameplay\src\config.json") as config_file:
+    config = json.load(config_file)
+    
+# Get The MongoDB URI From The COnfiguration
+uri = config.get("MONGO_URI")
+if not uri:
+    raise ValueError("MONGO_URI is missing in the configuration file.")
+
+# Create The MongoDB CLient
 client = MongoClient(uri, server_api=ServerApi("1"))
 
 # Database Connection
@@ -35,7 +44,6 @@ class GameInterface:
         self.correct_guesses_count = correct_guesses_count #Initialize Counter For Correctly Guessed Words
         self.score = score #Initialization Of Score
         self.played_words = [] # Keep Track of Played Words
-        self.delete_buttons = [] #List to store delete Buttons
         self.back_button = None #Initialize Go Back Button
         
         self.window.bind("<KeyPress>", self.handle_guess) # Bind Key Press to Guess Handler
@@ -309,8 +317,6 @@ class GameInterface:
     '''INITIAL MANDATORY GAME CONCEPTS'''
     # Player's Name Request Through Prompting
     def ask_name_window(self):
-        self.enter_name_button.pack_forget()  # Hide The Enter Name Button Once Clicked
-
         # Create A Child Window To Ask For The Name
         self.name_prompt = Toplevel(self.window)
         self.name_prompt.geometry("400x150")
@@ -346,10 +352,11 @@ class GameInterface:
                 self.score = existing_player.get("score", 0)
                 self.label.config(text=f"Welcome back, {player_name}!")  
                 
-                # Remove The Profiles Button Then Display A Play Game Button
+                # Remove The Profiles Button & Enter Name Button Then Display A Play Game Button
                 self.playgame_button = Button(self.window, text="Play Game", command=self.play_game)
                 self.playgame_button.pack(pady=10)
                 self.profiles_button.place_forget()
+                self.enter_name_button.pack_forget()
 
             else:  # if its a new name, Set The Player Name, Create A New MongoDB Profile With Score, Correct Guesses & Level & Save It Into The Database
                 self.player_name = player_name
@@ -357,12 +364,13 @@ class GameInterface:
                 collection.insert_one(player_data) 
                 self.label.config(text=f"Good To Have You Here, {player_name}!")
 
-                # Remove The Profiles Button Then Display A Play Game Button
+                # Remove The Profiles Button, Enter Name Button Then Display A Play Game Button
                 self.profiles_button.place_forget()
+                self.enter_name_button.pack_forget()
                 self.playgame_button = Button(self.window, text="Play Game", command=self.play_game) 
                 self.playgame_button.pack(pady=10)
                 
-            # self.name_entry.config(state='disabled') # Disable Name Entry To Prevent Further CHanges Till Reset
+                
             self.name_prompt.destroy()  # Enable closure of the propmt window
             
         else:
@@ -385,6 +393,8 @@ class GameInterface:
         self.guessed_word_label.config(text=self.construct_guessed_word()) # Display Underscores For Unguessed Letters
         self.label.config(text=f"Guess a word........")
         self.hint_button.pack(pady=10) #Unhide The Hint Button
+         # Un Hide The Profiles Label
+        
         
         #Ensure The Score_Label Is Created Only Once
         if not hasattr(self, 'score_label'):
@@ -491,6 +501,7 @@ class GameInterface:
             if guessed_letter in self.target_word:
                 if guessed_letter not in self.correct_guesses:
                     self.correct_guesses.append(guessed_letter)
+                        
                     self.label.config(text=f"Good Guess")
             else: #Increments Wrong Guesses Which Facilitate House Drawing
                 self.wrong_guesses += 1  
@@ -629,13 +640,8 @@ class GameInterface:
         if hasattr(self, "hint_button"):
             self.hint_button.pack_forget()
         
-        # Hide The Delete Buttons Before Showing Profiles Again
-        for button in self.delete_buttons:
-            button.pack_forget()
-        self.delete_buttons.clear()
-        
         # Query The Database To Get All Player Profiles
-        players = collection.find() # Fetch All Players
+        players = collection.find().sort("score", -1) # Fetch In Descending Order (-1)
         
         # Create A List Of The PLayer Profiles
         profiles_list = []
@@ -644,12 +650,7 @@ class GameInterface:
             player_name = player['name'] 
             player_score = player['score'] 
             profiles_list.append(f"{player_name} - {player_score}") # String The Display
-            
-            # Create A Button To Delete The Profile Using The Lambda Function Which Passes THe Name of The Profile To Delete
-            delete_button = Button(self.window, text=f" Delete Profile", command=lambda 
-                                   name=player_name:self.delete_profile(name))
-            self.delete_buttons.append(delete_button) # Store The Button
-            delete_button.pack() # Show Delete Button
+    
             
         # Join The List Of Profiles Into A Single String
         profiles_text ="\n".join(profiles_list)
@@ -662,21 +663,6 @@ class GameInterface:
         
         # Show The Main Menu Button
         self.show_back_button(self.setup_ui)
-        
-    # Deletes The Player Profile From Both The Game & Database
-    def delete_profile(self, player_name):
-        result = collection.delete_one({"name": player_name})
-        
-        if result.deleted_count > 0:
-            self.notification_label.config(text=f" Success! {player_name} Profile Deleted Successfully")
-            self.window.after(3000, self.clear_notification)
-        else:
-            self.notification_label.config(text=f"Error! {player_name} Not Found")
-            self.window.after(3000, self.clear_notification)
-        
-        #Refresh The Profiles List After Deletion
-        self.show_profiles()
-
     
 
     '''BACK BUTTON SYSTEMATICS'''
