@@ -650,7 +650,6 @@ class GameInterface:
             player_name = player['name'] 
             player_score = player['score'] 
             profiles_list.append(f"{player_name} - {player_score}") # String The Display
-    
             
         # Join The List Of Profiles Into A Single String
         profiles_text ="\n".join(profiles_list)
@@ -658,7 +657,7 @@ class GameInterface:
         # Update The Profile Label Text With The Fetched Data
         self.profiles_label.config(text=profiles_text)
         
-        # Un Hide The Profiles Label
+        # Un Hide The Profiles Label     
         self.profiles_label.pack()
         
         # Show The Main Menu Button

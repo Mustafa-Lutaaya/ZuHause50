@@ -22,7 +22,7 @@ INSTALLATION
 7. Navigate Back To The src Directory In The Gameplay Directory
 7. Test The MongoDB Connection By Typing " python test_mongo_connection.py "
 8. Run The Game With: " python ZuHause.py "
-9. Enter Your Name To Create A Profile. ENJOY !!!!!
+9. Enter Your Name To Create A Profile. ENJOY THE GAME !!!!!
 
 USAGE
 - Run The Game With : python ZuHause.py
