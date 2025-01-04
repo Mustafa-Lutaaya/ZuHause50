@@ -3,23 +3,23 @@ from pymongo.mongo_client import MongoClient #Import MongoDB Client
 from pymongo.server_api import ServerApi #Import ServerAPI for MongoDB Connection Handling
 import csv  # Import the csv module to read and write csv files
 from random import choice # Import the 'choice' function from the 'random' module to make random selections
-import json # Import JSON To Handle Configuration File
+import os # Import os to load environment variables
+from dotenv import load_dotenv  # Import dotenv to load environment variables from .env file
 
-# Load Configuration File
-with open(r"C:\Users\ReDI User\Desktop\PythonFinalProject\gameplay\src\config.json") as config_file:
-    config = json.load(config_file)
-    
-# Get The MongoDB URI From The COnfiguration
-uri = config.get("MONGO_URI")
+# Load the environment variables from the .env file
+load_dotenv()
+
+# Get the MongoDB URI from the environment variables
+uri = os.getenv("MONGO_URI")
 if not uri:
-    raise ValueError("MONGO_URI is missing in the configuration file.")
+    raise ValueError("MONGO_URI is missing in the environment variables.")
 
-# Create The MongoDB CLient
+# Create the MongoDB client
 client = MongoClient(uri, server_api=ServerApi("1"))
 
 # Database Connection
-db = client["ZuHause"]  # Acces the "ZuHause" Database
-collection = db["PlayersProfiles"]  # Access the "PlayersProfiles" Collection in the Databse
+db = client["ZuHause"]  # Access the "ZuHause" Database
+collection = db["PlayersProfiles"]  # Access the "PlayersProfiles" collection in the database
 
 Max_Wrong_Guesses = 17  # Set the maximum number of wrong guesses before the game ends
 

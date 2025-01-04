@@ -15,13 +15,11 @@ FEATURES
 INSTALLATION
 1. Install Python 3.x On Windows
 2. Clone The Game Repository.
-3. Navigate To The gameplay Directory.
+3. Navigate To The src Directory.
 4. Create A Virtual Enviroment By Running: " python -m venv myenv " in the command prompt.
-5. Navigate To The Enviroment
-5. Activate The Enviroment On Windows By Running: " \Scripts\Activate.ps1
-6. Install Required Libraries By Running: " pip3 install pymongo "
-7. Navigate Back To The src Directory In The Gameplay Directory
-7. Test The MongoDB Connection By Typing " python test_mongo_connection.py "
+5. Activate The Enviroment On Windows By Running: " myenv\Scripts\Activate.ps1 "
+6. Install Required Libraries By Running: pip install -r requirements.txt
+7. Test The MongoDB Connection By Typing "python test_mongo_connection.py"
 8. Run The Game With: " python ZuHause.py "
 9. Enter Your Name To Create A Profile. ENJOY THE GAME !!!!!
 
@@ -104,9 +102,7 @@ Screenshots
 
 TROUBLESHOOTING.
 Common Issues:
-1. Error: FileNotFoundError: ZuHause50.csv
-Ensure The CSV File Is In The Same Directory As The Python Script & Named ZuHause50.csv
-2. MongoDB Connection Error
+1. MongoDB Connection Error
 Make Sure Your MongoDB Service Is Running & Accesible.
 
 CONTRIBUTION
