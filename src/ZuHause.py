@@ -5,6 +5,8 @@ import csv  # Import the csv module to read and write csv files
 from random import choice # Import the 'choice' function from the 'random' module to make random selections
 import os # Import os to load environment variables
 from dotenv import load_dotenv  # Import dotenv to load environment variables from .env file
+import requests
+
 
 # Load the environment variables from the .env file
 load_dotenv()
@@ -462,33 +464,40 @@ class GameInterface:
         played_words = player.get("played_words", [])
         normalized_played_words = [word.lower().replace(" ", "_")for word in played_words]
         
+        # URL to the CSV file
+        csv_url = "https://github.com/Mustafa-Lutaaya/ZuHause/ZuHause50.csv"
+         
         # Open The CSV File
         try:
-            with open("ZuHause50.csv", mode="r") as csvfile:
-                reader = list(csv.reader(csvfile))  # Read the CSV file nto a list of rows
-                available_words = [row for row in reader if row[0].lower().replace(" ", "_") not in normalized_played_words]  # This filters out the already guessed words by making them look exactly identical to those in the CSV
-                
-                # If Words Are Finished The Game Ends & Displays A Message Together With A Reset Game Buttin
-                if not available_words:
-                    self.target_word = None
-                    self.game_active = False
-                    return
-
-                selected_row = choice(available_words)  # Randomly Select A Word
-                
-                self.target_word = selected_row[0].strip().lower().replace(" ", "_")  # Set The Word To Be Guessed
-                self.hint_text = selected_row[1]  # Set The Word's Hint From The CSV
-                self.meaning = selected_row[2] # Set The Meaning Of The Word From The CSV
-                self.translation = selected_row[3]# Set The Translation Of The WOrd From The CSV
-                self.translated_definition = selected_row[4]# Set The Translation's Definition From The CSV
-                self.target_word = self.target_word.replace(" ", "_") # If Chosen Word Has Spaces, They Are Replaced With _
-                self.correct_guesses=['_'] * self.target_word.count('_') # Same Is Implied For Correct Guesses Add space as '_'
-                
-        except FileNotFoundError: # Handle The Case When The File Is Not Found
-            self.label.config(text="CSV File Not Found!")
+            # Fetch CSV file from GitHub (or any external URL)
+            response = requests.get(csv_url)
+            response.raise_for_status()  # Raise an exception for HTTP errors
             
-        except Exception as e: # Handle Any Other Excepted Errors
-            self.label.config(text=f"An Error Occured: {str(e)}")
+            # Read the CSV content
+            reader = csv.reader(response.text.splitlines())
+            available_words = [row for row in reader if row[0].lower().replace(" ", "_") not in normalized_played_words]  # This filters out the already guessed words by making them look exactly identical to those in the CSV
+                
+            # If Words Are Finished The Game Ends & Displays A Message Together With A Reset Game Buttin
+            if not available_words:
+                self.target_word = None
+                self.game_active = False
+                return
+
+            selected_row = choice(available_words)  # Randomly Select A Word
+                
+            self.target_word = selected_row[0].strip().lower().replace(" ", "_")  # Set The Word To Be Guessed
+            self.hint_text = selected_row[1]  # Set The Word's Hint From The CSV
+            self.meaning = selected_row[2] # Set The Meaning Of The Word From The CSV
+            self.translation = selected_row[3]# Set The Translation Of The WOrd From The CSV
+            self.translated_definition = selected_row[4]# Set The Translation's Definition From The CSV
+            self.target_word = self.target_word.replace(" ", "_") # If Chosen Word Has Spaces, They Are Replaced With _
+            self.correct_guesses=['_'] * self.target_word.count('_') # Same Is Implied For Correct Guesses Add space as '_'
+                
+        except requests.exceptions.RequestException as e:  # Handle request errors
+            self.label.config(text=f"Error fetching CSV: {str(e)}")
+            
+        except Exception as e:  # Handle any other unexpected errors
+            self.label.config(text=f"An Error Occurred: {str(e)}")
     
     # Handle Guessing Game Logic Aftermath
     def handle_guess(self, event):
