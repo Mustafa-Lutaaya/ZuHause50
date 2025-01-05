@@ -5,7 +5,11 @@ ZuHause50 Is A Word Guessing Game  Whose Idea Was Inspired By A Word Game That M
 "ZuHause" The German Word Simply Means Home While The Number "50" Represents 50 Words. "ZuHause50" Is Also A Fusion Of Tech Between Two Languages.
 
 Because The 50 Words Are Commonly Used English Tech Words That Once Guessed Correctly Lead To A Display Of Their Deutsch Translation & Definition To The Player.
- 
+
+
+#Short Video Description
+[![Video Description](ZuHause50Logs/LogoPNG.png)](https://youtube.com/shorts/CqZsqFJkuPQ?feature=share)
+
 FEATURES
 - User Profiles & Data Stored In MongoDB & Can Be Viewed In Game In Highest Score Order
 - Word Guessing With Level Progression
@@ -16,11 +20,11 @@ INSTALLATION
 1. Install Python 3.x On Windows
 2. Clone The Game Repository.
 3. Navigate To The src Directory.
-4. Create A Virtual Enviroment By Running: " python3 -m venv myenv " in the command prompt.
+4. Create A Virtual Enviroment By Running: " python -m venv myenv " in the command prompt.
 5. Activate The Enviroment On Windows By Running: " .\myenv\Scripts\Activate.ps1 "
 6. Install Required Libraries By Running: " pip3 install -r requirements.txt "
-7. Test The MongoDB Connection By Typing "python3 test_mongo_connection.py"
-8. Run The Game With: " python3 ZuHause.py "
+7. Test The MongoDB Connection By Typing "python test_mongo_connection.py"
+8. Run The Game With: " python ZuHause.py "
 9. Enter Your Name To Create A Profile. ENJOY THE GAME !!!!!
 
 USAGE
