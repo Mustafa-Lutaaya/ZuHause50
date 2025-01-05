@@ -465,8 +465,8 @@ class GameInterface:
         normalized_played_words = [word.lower().replace(" ", "_")for word in played_words]
         
         # URL to the CSV file
-        csv_url = "https://github.com/Mustafa-Lutaaya/ZuHause/ZuHause50.csv"
-         
+        csv_url = "https://raw.githubusercontent.com/Mustafa-Lutaaya/ZuHause/refs/heads/main/ZuHause50.csv"
+        
         # Open The CSV File
         try:
             # Fetch CSV file from GitHub (or any external URL)
@@ -476,7 +476,7 @@ class GameInterface:
             # Read the CSV content
             reader = csv.reader(response.text.splitlines())
             available_words = [row for row in reader if row[0].lower().replace(" ", "_") not in normalized_played_words]  # This filters out the already guessed words by making them look exactly identical to those in the CSV
-                
+               
             # If Words Are Finished The Game Ends & Displays A Message Together With A Reset Game Buttin
             if not available_words:
                 self.target_word = None

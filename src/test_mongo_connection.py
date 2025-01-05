@@ -1,15 +1,11 @@
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import os
-print("Current working directory:", os.getcwd())
 
 from dotenv import load_dotenv
 
-
 # Load environment variables from the .env file
 load_dotenv()
-
-
 
 # Check if MONGO_URI is loaded
 MONGO_URI = os.getenv("MONGO_URI")

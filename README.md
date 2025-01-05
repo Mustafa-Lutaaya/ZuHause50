@@ -16,11 +16,11 @@ INSTALLATION
 1. Install Python 3.x On Windows
 2. Clone The Game Repository.
 3. Navigate To The src Directory.
-4. Create A Virtual Enviroment By Running: " python -m venv myenv " in the command prompt.
-5. Activate The Enviroment On Windows By Running: " myenv\Scripts\Activate.ps1 "
-6. Install Required Libraries By Running: pip install -r requirements.txt
-7. Test The MongoDB Connection By Typing "python test_mongo_connection.py"
-8. Run The Game With: " python ZuHause.py "
+4. Create A Virtual Enviroment By Running: " python3 -m venv myenv " in the command prompt.
+5. Activate The Enviroment On Windows By Running: " .\myenv\Scripts\Activate.ps1 "
+6. Install Required Libraries By Running: " pip3 install -r requirements.txt "
+7. Test The MongoDB Connection By Typing "python3 test_mongo_connection.py"
+8. Run The Game With: " python3 ZuHause.py "
 9. Enter Your Name To Create A Profile. ENJOY THE GAME !!!!!
 
 USAGE
