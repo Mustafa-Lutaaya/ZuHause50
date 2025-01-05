@@ -6,7 +6,7 @@ ZuHause50 Is A Word Guessing Game  Whose Idea Was Inspired By A Word Game That M
 
 Because The 50 Words Are Commonly Used English Tech Words That Once Guessed Correctly Lead To A Display Of Their Deutsch Translation & Definition To The Player.
 
-PRESS THUMBNAIL TO WATCH VIDEO DESCRIPTION
+CLICK THUMBNAIL BELOW TO WATCH A SHORT VIDEO DESCRIPTION
 
 [![Video Description](ZuHause50Logs/LogoPNG.png)](https://youtube.com/shorts/CqZsqFJkuPQ?feature=share)
 
