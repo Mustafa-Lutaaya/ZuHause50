@@ -36,7 +36,7 @@ class GameInterface:
         
         # Initalize Game Variables  
         self.mode = "light"  # Default to light mode
-        self.level = 1  # Deafult level is 1
+        self.level = 1  # Default level is 1
         self.target_word = None  # Placeholder for the target word 
         self.hint_text = None  # Placeholder for the hunt
         self.game_active = True # Game State is set to active initially
@@ -426,8 +426,8 @@ class GameInterface:
         
     # Remove The Play On Button after it has been clicked
     def remove_playon_button(self, event):
-        self.playgame_button.pack_forget() #Destroys the Play On Button
-        self.play_game() #Restarts the game
+        self.playgame_button.pack_forget() # Destroys the Play On Button
+        self.play_game() # Restarts the game
         
     # Reset The Database Scores, Levels & Played Words, Then Restart The Game Window
     def reset_game_state(self):
